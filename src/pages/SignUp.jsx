@@ -59,7 +59,7 @@ function SignUp() {
       });
 
       const formDataCopy = { ...formData };
-      delete formData.password;
+      delete formDataCopy.password;
       formDataCopy.timestamp = serverTimestamp();
 
       const userRef = doc(db, "users", user.uid);
