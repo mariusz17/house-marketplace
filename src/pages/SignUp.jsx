@@ -35,6 +35,14 @@ function SignUp() {
     try {
       const auth = getAuth();
 
+      // auth.currentUser is null just after above (it waits
+      // for the response from the server). But getAuth() does not
+      // behave like async function, I don't understand it
+      // 100%. auth needs to be passed to another function,
+      // like below createUserWithEmailAndPassword and that
+      // function somehow waits for the response, so auth
+      // is updated with currentUser value
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -54,7 +62,8 @@ function SignUp() {
       delete formData.password;
       formDataCopy.timestamp = serverTimestamp();
 
-      await setDoc(doc(db, "users", user.uid), formDataCopy);
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, formDataCopy);
 
       navigate("/");
     } catch (error) {
