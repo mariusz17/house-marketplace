@@ -19,9 +19,18 @@ function App() {
           <Route path="/" element={<Explore />} />
           <Route path="/offers" element={<Offers />} />
           <Route path="/category/:categoryName" element={<Category />} />
-          <Route path="/profile" element={<PrivateRoute />}>
-            <Route path="/profile" element={<Profile />} />
-          </Route>
+          {/* Below I've done it differently than in course,
+					maybe it looks better, but needs children to be passed as
+					props to PrivateRoute element
+					 */}
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
