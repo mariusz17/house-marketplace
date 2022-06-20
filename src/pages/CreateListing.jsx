@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { getAuth } from "firebase/auth";
+import { toast } from "react-toastify";
+import { Spinner } from "../components/Spinner";
 
 const CreateListing = () => {
   const auth = getAuth();
   const user = auth.currentUser;
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     type: "rent",
     name: "",
@@ -38,67 +42,133 @@ const CreateListing = () => {
     longitude,
   } = formData;
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    if (discountedPrice >= regularPrice) {
+      toast.error("Discounted price has to be less than regular price.");
+      return;
+    }
+
+    if (images.length > 6) {
+      toast.error("Max 6 images are allowed.");
+      return;
+    }
+
+    setLoading(true);
+
+    let geolocation = {};
+    let location;
+
+    if (geolocationEnabled) {
+      try {
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${process.env.REACT_APP_GEOCODE_API_KEY}`
+        );
+
+        const data = await response.json();
+
+        geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
+        geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
+        location =
+          data.status === "ZERO_RESULTS"
+            ? undefined
+            : data.results[0]?.formatted_address;
+
+        if (location === undefined || location.includes("undefined")) {
+          setLoading(false);
+          toast.error("Please enter correct address");
+          return;
+        }
+      } catch (error) {
+        setLoading(false);
+        toast.error(
+          "Could not get geolocation from Google API. Please use manual geolocation."
+        );
+        return;
+      }
+    } else {
+      geolocation.lat = latitude;
+      geolocation.lng = longitude;
+      location = address;
+    }
+
+    console.log(geolocation.lat);
+    console.log(geolocation.lng);
+    console.log(location);
+
+    setLoading(false);
   };
 
   const onMutate = (e) => {
     e.preventDefault();
 
-    // let boolean = null;
+    let boolean = null;
 
-    // if (e.target.value === "true") {
-    //   boolean = true;
-    // }
+    if (e.target.value === "true") {
+      boolean = true;
+    }
 
-    // if (e.target.value === "false") {
-    //   boolean = false;
-    // }
+    if (e.target.value === "false") {
+      boolean = false;
+    }
 
-    // // Files
-    // if (e.target.files) {
-    //   setFormData((prevState) => ({
-    //     ...prevState,
-    //     images: e.target.files,
-    //   }));
-    // }
-
-    // // Boolean, numbers, text
-    // if (!e.target.files) {
-    //   setFormData((prevState) => ({
-    //     ...prevState,
-    //     [e.target.id]: boolean ?? e.target.value,
-    //   }));
-    // }
-
+    // Files
     if (e.target.files) {
       setFormData((prevState) => ({
         ...prevState,
         images: e.target.files,
       }));
-    } else if (e.target.value === "true") {
+    }
+
+    // Boolean, numbers, text
+    if (!e.target.files) {
       setFormData((prevState) => ({
         ...prevState,
-        [e.target.id]: true,
-      }));
-    } else if (e.target.value === "false") {
-      setFormData((prevState) => ({
-        ...prevState,
-        [e.target.id]: false,
-      }));
-    } else if (e.target.type === "number") {
-      setFormData((prevState) => ({
-        ...prevState,
-        [e.target.id]: +e.target.value,
-      }));
-    } else {
-      setFormData((prevState) => ({
-        ...prevState,
-        [e.target.id]: e.target.value,
+        [e.target.id]: boolean ?? e.target.value,
       }));
     }
+
+    // if (e.target.files) {
+    //   setFormData((prevState) => ({
+    //     ...prevState,
+    //     images: e.target.files,
+    //   }));
+    // } else if (e.target.value === "true") {
+    //   setFormData((prevState) => ({
+    //     ...prevState,
+    //     [e.target.id]: true,
+    //   }));
+    // } else if (e.target.value === "false") {
+    //   setFormData((prevState) => ({
+    //     ...prevState,
+    //     [e.target.id]: false,
+    //   }));
+    // } else if (e.target.type === "number") {
+    //   setFormData((prevState) => ({
+    //     ...prevState,
+    //     [e.target.id]: +e.target.value,
+    //   }));
+    // } else {
+    //   setFormData((prevState) => ({
+    //     ...prevState,
+    //     [e.target.id]: e.target.value,
+    //   }));
+    // }
   };
+
+  const setGoogleGeolocation = (e) => {
+    if (e.target.value === "true") {
+      setGeolocationEnabled(true);
+    }
+    if (e.target.value === "false") {
+      setGeolocationEnabled(false);
+    }
+  };
+
+  if (loading) {
+    return <Spinner />;
+  }
 
   return (
     <div className="profile">
@@ -241,6 +311,30 @@ const CreateListing = () => {
             onChange={onMutate}
             required
           />
+
+          <label className="formLabel">Use Google Geolocation</label>
+          <div className="formButtons">
+            <button
+              className={geolocationEnabled ? "formButtonActive" : "formButton"}
+              type="button"
+              id="google-geolocation"
+              value={true}
+              onClick={setGoogleGeolocation}
+            >
+              Yes
+            </button>
+            <button
+              className={
+                !geolocationEnabled ? "formButtonActive" : "formButton"
+              }
+              type="button"
+              id="google-geolocation"
+              value={false}
+              onClick={setGoogleGeolocation}
+            >
+              No
+            </button>
+          </div>
 
           {!geolocationEnabled && (
             <div className="formLatLng flex">
