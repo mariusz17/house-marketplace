@@ -790,6 +790,13 @@ button {
   opacity: 0.75;
 }
 
+.imagesInfoError {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  color: red;
+  font-weight: bold;
+}
+
 .formInputFile {
   width: 100%;
 }
