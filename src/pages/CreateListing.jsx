@@ -141,13 +141,13 @@ const CreateListing = () => {
     const imgUrls = await Promise.all(
       [...images].map((image) => storeImage(image))
     ).catch((error) => {
-      toast.error("Could not upload one or more images");
       console.log("Error uploading image:", error);
       return;
     });
 
-    if (imgUrls === undefined || imgUrls.includes("undefined")) {
+    if (!imgUrls) {
       setLoading(false);
+      toast.error("Could not upload one or more images");
       return;
     }
 
