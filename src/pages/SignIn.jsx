@@ -47,9 +47,6 @@ function SignIn() {
         <header>
           <p className="pageHeader">Welcome Back!</p>
         </header>
-
-        <main></main>
-
         <form onSubmit={onSubmit}>
           <input
             type="email"
@@ -73,8 +70,7 @@ function SignIn() {
               src={visibilityIcon}
               alt="show password"
               className="showPassword"
-              onClick={() => setShowPassword(!showPassword)}
-              // tutaj zrobiłem inaczej, zamiast przekazywać funkcję strzałkową anonimową z prevState przekazuję od razu negację obecnego stanu i działa bez błędów hmm...
+              onClick={() => setShowPassword((prevState) => !prevState)}
             />
           </div>
 
