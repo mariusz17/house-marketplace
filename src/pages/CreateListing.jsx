@@ -10,7 +10,7 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { toast } from "react-toastify";
 import { v4 as uuidv4 } from "uuid";
-import { Spinner } from "../components/Spinner";
+import Spinner from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
 
 const CreateListing = () => {
