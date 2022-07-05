@@ -16,7 +16,6 @@ const Listing = () => {
   const navigate = useNavigate();
 
   const auth = getAuth();
-  console.log(auth.currentUser);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -99,7 +98,7 @@ const Listing = () => {
 
         {auth.currentUser?.uid !== listing.userRef && (
           <Link
-            to={`/contact/${listing.userRef}?listingName=${listing.name}&listingLocation=${listing.location}`}
+            to={`/contact/${listing.userRef}?listingName=${listing.name}`}
             className="primaryButton"
           >
             Contact Landlord
