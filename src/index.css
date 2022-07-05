@@ -330,7 +330,7 @@ button {
 .swiperSlideDiv {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 300px;
 }
 
 .swiperSlideImg {
@@ -827,4 +827,12 @@ button {
   margin-left: 1rem;
   font-size: 0.8rem;
   opacity: 0.75;
+}
+
+.swiper-button-prev::after {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.swiper-button-next::after {
+  color: rgba(255, 255, 255, 0.9);
 }
