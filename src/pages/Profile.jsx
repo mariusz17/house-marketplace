@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
-import { updateDoc, doc } from "firebase/firestore";
+import useListings from "../hooks/useListings";
+import { updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import ListingItem from "../components/ListingItem";
 import arrowRight from "../assets/svg/keyboardArrowRightIcon.svg";
 import homeIcon from "../assets/svg/homeIcon.svg";
 
@@ -14,6 +16,19 @@ function Profile() {
     name: auth.currentUser.displayName,
     email: auth.currentUser.email,
   });
+
+  const { listings, listingsLoading, listingsError, setListings } = useListings(
+    {
+      field: "userRef",
+      comparison: "==",
+      value: auth.currentUser.uid,
+    },
+    {
+      field: "timestamp",
+      direction: "desc",
+      limit: 999,
+    }
+  );
 
   const { name, email } = formData;
 
@@ -46,6 +61,17 @@ function Profile() {
       ...prevState,
       [e.target.id]: e.target.value,
     }));
+  };
+
+  const onDelete = async (listingId) => {
+    if (window.confirm("Are you sure you want to delete?")) {
+      await deleteDoc(doc(db, "listings", listingId));
+      const updatedListings = listings.filter(
+        (listing) => listing.id !== listingId
+      );
+      setListings(updatedListings);
+      toast.success("Successfully deleted listing");
+    }
   };
 
   return (
@@ -96,6 +122,22 @@ function Profile() {
           <p>Sell or rent your home</p>
           <img src={arrowRight} alt="arrow right" />
         </Link>
+
+        {!listingsLoading && !listingsError && listings.length > 0 && (
+          <>
+            <p className="listingText">Your Listings</p>
+            <ul>
+              {listings.map((listing) => (
+                <ListingItem
+                  key={listing.id}
+                  listing={listing.data}
+                  id={listing.id}
+                  onDelete={() => onDelete(listing.id)}
+                />
+              ))}
+            </ul>
+          </>
+        )}
       </main>
     </div>
   );

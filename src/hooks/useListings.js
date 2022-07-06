@@ -61,7 +61,12 @@ const useListings = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { listings, listingsLoading: loading, listingsError: error };
+  return {
+    listings,
+    listingsLoading: loading,
+    listingsError: error,
+    setListings,
+  };
 };
 
 export default useListings;
