@@ -1,55 +1,23 @@
-import { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-} from "firebase/firestore";
-import { db } from "../firebase.config";
 import ListingItem from "../components/ListingItem";
+import useListings from "../hooks/useListings";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 
 const Offers = () => {
-  const [listings, setListings] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { listings, listingsLoading, listingsError } = useListings(
+    {
+      field: "offer",
+      comparison: "==",
+      value: true,
+    },
+    {
+      field: "timestamp",
+      direction: "desc",
+      limit: 10,
+    }
+  );
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        // Get reference
-        const listingsRef = collection(db, "listings");
-
-        // Create query
-        const q = query(
-          listingsRef,
-          where("offer", "==", true),
-          orderBy("timestamp", "desc", limit(10))
-        );
-
-        // Execute query
-        const querySnap = await getDocs(q);
-
-        const listings = [];
-        querySnap.forEach((doc) => {
-          listings.push({
-            id: doc.id,
-            data: doc.data(),
-          });
-        });
-
-        setListings(listings);
-        setLoading(false);
-      } catch (error) {
-        toast.error("Could not get offers listing.");
-      }
-    };
-
-    fetchListings();
-  }, []);
+  if (listingsError) toast.error("Could not get offers listing.");
 
   return (
     <div className="category">
@@ -57,15 +25,7 @@ const Offers = () => {
         <p className="pageHeader">Offers</p>
       </header>
 
-      <Listings loading={loading} listings={listings} />
-
-      {/* {loading ? (
-        <Spinner />
-      ) : listings && listings.length > 0 ? (
-        <></>
-      ) : (
-        <p>No listings for {params.categoryName}</p>
-      )} */}
+      <Listings loading={listingsLoading} listings={listings} />
     </div>
   );
 };

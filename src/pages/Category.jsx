@@ -1,58 +1,26 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-} from "firebase/firestore";
-import { db } from "../firebase.config";
+import useListings from "../hooks/useListings";
 import ListingItem from "../components/ListingItem";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 
 const Category = () => {
-  const [listings, setListings] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   const params = useParams();
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      try {
-        // Get reference
-        const listingsRef = collection(db, "listings");
+  const { listings, listingsLoading, listingsError } = useListings(
+    {
+      field: "type",
+      comparison: "==",
+      value: params.categoryName,
+    },
+    {
+      field: "timestamp",
+      direction: "desc",
+      limit: 10,
+    }
+  );
 
-        // Create query
-        const q = query(
-          listingsRef,
-          where("type", "==", params.categoryName),
-          orderBy("timestamp", "desc", limit(10))
-        );
-
-        // Execute query
-        const querySnap = await getDocs(q);
-
-        const listings = [];
-        querySnap.forEach((doc) => {
-          listings.push({
-            id: doc.id,
-            data: doc.data(),
-          });
-        });
-
-        setListings(listings);
-        setLoading(false);
-      } catch (error) {
-        toast.error("Could not get offers listing.");
-      }
-    };
-
-    fetchListings();
-  }, [params.categoryName]);
+  if (listingsError) toast.error("Could not get offers listing.");
 
   return (
     <div className="category">
@@ -64,15 +32,9 @@ const Category = () => {
         </p>
       </header>
 
-      <Listings loading={loading} listings={listings} />
-
-      {/* {loading ? (
-        <Spinner />
-      ) : listings && listings.length > 0 ? (
-        <></>
-      ) : (
-        <p>No listings for {params.categoryName}</p>
-      )} */}
+      {!listingsError && (
+        <Listings loading={listingsLoading} listings={listings} />
+      )}
     </div>
   );
 };

@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
-import { db } from "../firebase.config";
+import useListings from "../hooks/useListings";
 import { Pagination, Scrollbar, A11y, Autoplay } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -12,34 +10,26 @@ import "swiper/css/autoplay";
 import Spinner from "./Spinner";
 
 const Slider = () => {
-  const [loading, setLoading] = useState(true);
-  const [listings, setListings] = useState(null);
+  const { listings, listingsLoading, listingsError } = useListings(
+    {
+      field: "timestamp",
+      comparison: "!=",
+      value: "",
+    },
+    {
+      field: "timestamp",
+      direction: "desc",
+      limit: 4,
+    }
+  );
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getListings = async () => {
-      const listingsRef = collection(db, "listings");
-
-      const q = query(listingsRef, orderBy("timestamp", "desc", limit(4)));
-
-      const querySnap = await getDocs(q);
-      const listings = [];
-      querySnap.forEach((doc) =>
-        listings.push({ id: doc.id, data: doc.data() })
-      );
-
-      setListings(listings);
-      setLoading(false);
-    };
-
-    getListings();
-  }, []);
-
-  if (loading) return <Spinner />;
+  if (listingsLoading) return <Spinner />;
 
   return (
-    listings && (
+    listings &&
+    !listingsError && (
       <>
         <p className="exploreHeading">Recommended</p>
 
