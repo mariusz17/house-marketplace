@@ -4,18 +4,13 @@ import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 
 const Offers = () => {
-  const { listings, listingsLoading, listingsError } = useListings(
-    {
-      field: "offer",
-      comparison: "==",
-      value: true,
-    },
-    {
-      field: "timestamp",
-      direction: "desc",
-      limit: 10,
-    }
-  );
+  const {
+    listings,
+    listingsLoading,
+    listingsError,
+    wasLastListingFetched,
+    getMoreListings,
+  } = useListings("offer", "==", true, 10);
 
   if (listingsError) toast.error("Could not get offers listing.");
 
@@ -25,7 +20,14 @@ const Offers = () => {
         <p className="pageHeader">Offers</p>
       </header>
 
-      <Listings loading={listingsLoading} listings={listings} />
+      {!listingsError && (
+        <Listings loading={listingsLoading} listings={listings} />
+      )}
+      {!wasLastListingFetched && (
+        <p className="loadMore" onClick={getMoreListings}>
+          Load more
+        </p>
+      )}
     </div>
   );
 };

@@ -7,18 +7,13 @@ import Spinner from "../components/Spinner";
 const Category = () => {
   const params = useParams();
 
-  const { listings, listingsLoading, listingsError } = useListings(
-    {
-      field: "type",
-      comparison: "==",
-      value: params.categoryName,
-    },
-    {
-      field: "timestamp",
-      direction: "desc",
-      limit: 10,
-    }
-  );
+  const {
+    listings,
+    listingsLoading,
+    listingsError,
+    getMoreListings,
+    wasLastListingFetched,
+  } = useListings("type", "==", params.categoryName, 5);
 
   if (listingsError) toast.error("Could not get offers listing.");
 
@@ -34,6 +29,11 @@ const Category = () => {
 
       {!listingsError && (
         <Listings loading={listingsLoading} listings={listings} />
+      )}
+      {!wasLastListingFetched && (
+        <p className="loadMore" onClick={getMoreListings}>
+          Load more
+        </p>
       )}
     </div>
   );

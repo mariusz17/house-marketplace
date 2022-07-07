@@ -17,18 +17,14 @@ function Profile() {
     email: auth.currentUser.email,
   });
 
-  const { listings, listingsLoading, listingsError, setListings } = useListings(
-    {
-      field: "userRef",
-      comparison: "==",
-      value: auth.currentUser.uid,
-    },
-    {
-      field: "timestamp",
-      direction: "desc",
-      limit: 999,
-    }
-  );
+  const {
+    listings,
+    listingsLoading,
+    listingsError,
+    setListings,
+    wasLastListingFetched,
+    getMoreListings,
+  } = useListings("userRef", "==", auth.currentUser.uid, 10);
 
   const { name, email } = formData;
 
@@ -137,6 +133,12 @@ function Profile() {
               ))}
             </ul>
           </>
+        )}
+
+        {!wasLastListingFetched && (
+          <p className="loadMore" onClick={getMoreListings}>
+            Load more
+          </p>
         )}
       </main>
     </div>

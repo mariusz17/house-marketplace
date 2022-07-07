@@ -11,16 +11,10 @@ import Spinner from "./Spinner";
 
 const Slider = () => {
   const { listings, listingsLoading, listingsError } = useListings(
-    {
-      field: "timestamp",
-      comparison: "!=",
-      value: "",
-    },
-    {
-      field: "timestamp",
-      direction: "desc",
-      limit: 4,
-    }
+    "timestamp",
+    "!=",
+    "",
+    4
   );
 
   const navigate = useNavigate();
