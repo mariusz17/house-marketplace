@@ -9,6 +9,7 @@ import Offers from "./pages/Offers";
 import Category from "./pages/Category";
 import Listing from "./pages/Listing";
 import Profile from "./pages/Profile";
+import EditListing from "./pages/EditListing";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import CreateListing from "./pages/CreateListing";
@@ -43,6 +44,14 @@ function App() {
             element={
               <PrivateRoute>
                 <CreateListing />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/edit-listing/:listingId"
+            element={
+              <PrivateRoute>
+                <EditListing />
               </PrivateRoute>
             }
           />
