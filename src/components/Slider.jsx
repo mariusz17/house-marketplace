@@ -19,7 +19,13 @@ const Slider = () => {
 
   const navigate = useNavigate();
 
-  if (listingsLoading) return <Spinner />;
+  if (listingsLoading) {
+    return <Spinner />;
+  }
+
+  if (listings.length === 0) {
+    return <></>;
+  }
 
   return (
     listings &&
