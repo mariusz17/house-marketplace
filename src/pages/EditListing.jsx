@@ -40,13 +40,15 @@ const EditListing = () => {
     userRef,
   } = formData ?? {};
 
+  // Return to homepage if user does not own this listing
   useEffect(() => {
-    if (auth.currentUser.uid !== params.listingId) {
+    if (formData && auth.currentUser.uid !== formData.userRef) {
       toast.error("You cannot edit this listing");
       navigate("/");
     }
-  }, [params.listingId, navigate, auth.currentUser.uid]);
+  }, [params.listingId, navigate, auth.currentUser.uid, formData]);
 
+  // Fetch listing
   useEffect(() => {
     const getListing = async () => {
       try {
