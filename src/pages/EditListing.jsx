@@ -41,6 +41,13 @@ const EditListing = () => {
   } = formData ?? {};
 
   useEffect(() => {
+    if (auth.currentUser.uid !== params.listingId) {
+      toast.error("You cannot edit this listing");
+      navigate("/");
+    }
+  }, [params.listingId, navigate, auth.currentUser.uid]);
+
+  useEffect(() => {
     const getListing = async () => {
       try {
         const docRef = doc(db, "listings", params.listingId);
