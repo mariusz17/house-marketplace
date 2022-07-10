@@ -459,6 +459,17 @@ button {
   align-items: center;
 }
 
+.categoryListingRegularPrice {
+  margin-top: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #999;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  text-decoration: line-through;
+}
+
 .categoryListingInfoDiv {
   display: flex;
   justify-content: space-between;

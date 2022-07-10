@@ -19,6 +19,18 @@ const ListingItem = ({ listing, id, onEdit, onDelete }) => {
         <div className="categoryListingDetails">
           <p className="categoryListingLocation">{listing.location}</p>
           <p className="categoryListingName">{listing.name}</p>
+          {listing.offer ? (
+            <p className="categoryListingRegularPrice">
+              $
+              {listing.regularPrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              {listing.type === "rent" && " / month"}
+            </p>
+          ) : (
+            ""
+          )}
+
           <p className="categoryListingPrice">
             $
             {listing.offer
