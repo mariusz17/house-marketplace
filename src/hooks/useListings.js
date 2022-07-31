@@ -16,6 +16,7 @@ const useListings = (type, comparison, value, qty) => {
   const [error, setError] = useState(null);
   const [lastListing, setLastListing] = useState(null);
   const [wasLastListingFetched, setWasLastListingFetched] = useState(false);
+  const [lastDocId, setLastDocId] = useState(null);
 
   useEffect(() => {
     const getListings = async () => {
@@ -37,6 +38,7 @@ const useListings = (type, comparison, value, qty) => {
 
         const querySnap = await getDocs(q);
         const querySnapLast = await getDocs(qLast);
+        setLastDocId(querySnapLast.docs[0].id);
 
         // Check if in this query last listing was fetched
         querySnap.docs[querySnap.docs.length - 1].id ===
@@ -79,16 +81,8 @@ const useListings = (type, comparison, value, qty) => {
       );
       const querySnap = await getDocs(q);
 
-      const qLast = query(
-        listingsRef,
-        where(type, comparison, value),
-        orderBy("timestamp", "asc"),
-        limit(1)
-      );
-      const querySnapLast = await getDocs(qLast);
-
       // Check if in this query last listing was fetched
-      querySnap.docs[querySnap.docs.length - 1].id === querySnapLast.docs[0].id
+      querySnap.docs[querySnap.docs.length - 1].id === lastDocId
         ? setWasLastListingFetched(true)
         : setLastListing(querySnap.docs[querySnap.docs.length - 1]);
 

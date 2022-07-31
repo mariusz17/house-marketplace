@@ -10,7 +10,7 @@ const Offers = () => {
     listingsError,
     wasLastListingFetched,
     getMoreListings,
-  } = useListings("offer", "==", true, 10);
+  } = useListings("offer", "==", true, 5);
 
   if (listingsError) toast.error("Could not get offers listing.");
 
