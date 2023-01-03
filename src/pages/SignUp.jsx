@@ -68,7 +68,11 @@ function SignUp() {
 
       navigate("/");
     } catch (error) {
-      toast.error("Something went wrong with registration");
+      if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong with registration");
+      }
     }
   };
 
